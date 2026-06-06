@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Cart</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+</head>
+<body>
+
+<nav>
+
+    <div class="logo">
+        MyStore
+    </div>
+
+    <ul>
+        <li><a href="index.html">Home</a></li>
+    </ul>
+
+</nav>
+
+<div class="container">
+
+    <h1 class="title">
+        Shopping Cart
+    </h1>
+
+    <div id="cartItems"></div>
+
+    <h2 class="total"
+        id="total">
+    </h2>
+
+    <button class="btn"
+            id="checkoutBtn">
+
+        Place Order
+
+    </button>
+
+</div>
+
+<script>
+
+let total = 0;
+
+async function loadCart(){
+
+    let cart =
+    JSON.parse(
+        localStorage.getItem("cart")
+    ) || [];
+
+    const cartDiv =
+    document.getElementById("cartItems");
+
+    for(let id of cart){
+
+        const response =
+        await fetch(
+            `http://localhost:5000/api/products/${id}`
+        );
+
+        const product =
+        await response.json();
+
+        total += product.price;
+
+        cartDiv.innerHTML += `
+
+        <div class="cart-item">
+
+            <img src="${product.image}">
+
+            <div>
+
+                <h2>${product.name}</h2>
+
+                <h3 class="price">
+                    ₹${product.price}
+                </h3>
+
+            </div>
+
+        </div>
+
+        `;
+    }
+
+    document.getElementById("total")
+    .innerText = `Total: ₹${total}`;
+}
+
+loadCart();
+
+document.getElementById(
+    "checkoutBtn"
+).addEventListener("click", async () => {
+
+    let cart =
+    JSON.parse(
+        localStorage.getItem("cart")
+    ) || [];
+
+    const response = await fetch(
+        "http://localhost:5000/api/orders",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+                products: cart,
+                totalAmount: total
+            })
+        }
+    );
+
+    const data =
+    await response.json();
+
+    alert(data.message);
+
+    localStorage.removeItem("cart");
+
+    window.location.href =
+    "index.html";
+});
+
+</script>
+
+</body>
+</html>
