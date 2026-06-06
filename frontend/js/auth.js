@@ -10,7 +10,7 @@ document.getElementById("registerForm")
     };
 
     const response = await fetch(
-        "http://localhost:5000/api/auth/register",
+        "https://ecommerce-backend-ou46.onrender.com/api/auth/register",
         {
             method: "POST",
             headers: {

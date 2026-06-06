@@ -1,4 +1,4 @@
-fetch("http://localhost:5000/api/products")
+fetch("https://ecommerce-backend-ou46.onrender.com/api/products")
 
 .then(res => res.json())
 
