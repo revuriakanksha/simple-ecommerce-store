@@ -1,41 +1,39 @@
 const express = require("express");
+const router = express.Router();
 
 const Product = require("../models/Product");
 
-const router = express.Router();
-
+// GET all products
 router.get("/", async (req, res) => {
-
-    const products = await Product.find();
-
-    res.json(products);
-
+    try {
+        const products = await Product.find();
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
 });
 
-router.get("/:id", async (req, res) => {
-
-    const product =
-        await Product.findById(req.params.id);
-
-    res.json(product);
-
-});
-
+// POST product
 router.post("/", async (req, res) => {
+    try {
+        const product = new Product({
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            image: req.body.image
+        });
 
-    console.log(req.body);
+        const savedProduct = await product.save();
 
-    const product = new Product({
-        name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-        image: req.body.image
-    });
+        res.status(201).json(savedProduct);
 
-    await product.save();
-
-    res.json(product);
-
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        });
+    }
 });
 
 module.exports = router;
